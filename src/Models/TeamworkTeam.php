@@ -60,7 +60,10 @@ class TeamworkTeam extends Model
         });
 
         static::updating(function ($model) {
-            $model->uuid = (string)Uuid::uuid1();
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // Stoping the uuid from changing when updating the Team.
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // $model->uuid = (string)Uuid::uuid1();
             $model->slug = Str::slug($model->name);
         });
 
