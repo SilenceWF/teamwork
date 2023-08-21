@@ -1,0 +1,51 @@
+<?php
+
+namespace {{namespace}}Http\Controllers\Teamwork;
+
+use Illuminate\Http\Request;
+use Mpociot\Teamwork\Models\TeamworkTeam;
+use App\Http\Controllers\Controller;
+
+class TeamMemberController extends Controller
+{
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
+     * Show the members of the given team.
+     *
+     * @param  TeamworkTeam $team
+     * @return \Illuminate\View\View
+     */
+    public function show(TeamworkTeam $team)
+    {
+        return view('teamwork.members.list')->withTeam($team);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param TeamworkTeam $team
+     * @param int $user
+     * @return \Illuminate\Http\RedirectResponse
+     * @internal param int $id
+     */
+    public function destroy(TeamworkTeam $team, $user)
+    {
+        if (!auth()->user()->isOwnerOfTeam($team)) {
+            abort(403);
+        }
+
+        $userModel = config('teamwork.user_model');
+        $user = $userModel::findOrFail($user);
+        if ($user->getKey() === auth()->user()->getKey()) {
+            abort(403);
+        }
+
+        $user->detachTeam($team);
+
+        return redirect(route('teams.members.show', $team))->with('success', 'Team Member has been deleted successfully!');
+    }
+}
